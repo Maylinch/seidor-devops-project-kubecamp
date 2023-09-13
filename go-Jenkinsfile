@@ -17,7 +17,7 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube') {
+                withSonarQubeEnv('aroldev sonarqube') {
                     sh 'sonar-scanner'  // Ejecuta el análisis de SonarQube
                 }
             }
