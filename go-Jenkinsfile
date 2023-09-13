@@ -14,6 +14,14 @@ pipeline {
                 checkout scm
             }
         }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonarqube') {
+                    sh 'sonar-scanner'  // Ejecuta el análisis de SonarQube
+                }
+            }
+        } 
        stage('Build Docker Image') {
             steps {
                 dir('services/go-auth'){
