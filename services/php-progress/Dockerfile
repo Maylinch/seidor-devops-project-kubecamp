@@ -13,7 +13,7 @@ COPY composer.json composer.lock* ./
 RUN composer install --no-dev
 
 
-# ----------------------
+# -----------------------------------------------------
 
 FROM php:8.2-alpine
 
