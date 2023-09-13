@@ -16,9 +16,12 @@ pipeline {
         }
        stage('Build Docker Image') {
             steps {
-                script {
+                dir('services/go-auth')
+                {
+                    script {
                     // Construye la imagen de Docker
-                    app = docker.build("${params.DOCKER_IMAGE}:${params.TAG}", "-f ./Dockerfile  .")
+                        app = docker.build("${params.DOCKER_IMAGE}:${params.TAG}", "-f ./Dockerfile  .")
+                    }
                 }
             }
         }
