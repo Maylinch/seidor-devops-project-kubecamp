@@ -1,10 +1,15 @@
-FROM php:8.2-bullseye AS builder
+FROM php:8.2-fpm AS builder
 
-RUN apt update && apt install -y git
+RUN apt-get update && apt-get install -y \
+    libssl-dev \
+    libzip-dev \
+    unzip \
+    git \
+    && pecl install mongodb \
+    && docker-php-ext-enable mongodb \
+    && docker-php-ext-install zip
 
-LABEL lang="php"
-
-COPY --from=composer:2.5.8 /usr/bin/composer /usr/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 WORKDIR /var/www/html
 
@@ -12,13 +17,16 @@ COPY composer.json composer.lock* ./
 
 RUN composer install --no-dev
 
+# -----------------------------
 
-# -----------------------------------------------------
-
-FROM php:8.2-alpine
-
-WORKDIR /var/www/html
+FROM php:8.2-fpm-alpine
 
 RUN apk add --no-cache libpq
 
+WORKDIR /var/www/html
+
 COPY --from=builder /var/www/html/vendor ./vendor
+
+COPY . .
+
+CMD ["php-fpm"]
