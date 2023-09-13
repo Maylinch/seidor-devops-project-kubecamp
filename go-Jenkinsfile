@@ -20,57 +20,39 @@ pipeline {
                     script {
                     // Construye la imagen de Docker
                         app = docker.build("${params.DOCKER_IMAGE}:${params.TAG}", "-f ./Dockerfile  .")
-                    }
-                            
-                    stage('Test') {
-                        agent{
-                            docker { image 'golang:1.21-bullseye' }
-                        }
-                        steps {
-                            sh './go test ./'
-                        }
-                    }
-                    stage('Push image') {
-                        steps{
-                            script{
-                                withCredentials([usernamePassword(credentialsId: 'jordi.docker', passwordVariable: 'DOCKER_REGISTRY_PWD', usernameVariable: 'DOCKER_REGISTRY_USER')]) {
-                                    // assumes Jib is configured to use the environment variables
-                                    sh "docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PWD}"
-                                    app.push()
-                                }
-                            }
-                        }
-                    }
-        
-
-
-
-
-
-
-                    
+                    }                    
                 }
             }
         }
         
-        
-        
+        stage('Test') {
+            dir('services/go-auth'){
+                agent{
+                docker { image 'golang:1.21-bullseye' }
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+                }
+                steps {
+                    sh './go test ./'
+                }
+
+
+            }
+            
+        }
+        stage('Push image') {
+            dir('services/go-auth'){
+
+                steps{
+                    script{
+                        withCredentials([usernamePassword(credentialsId: 'jordi.docker', passwordVariable: 'DOCKER_REGISTRY_PWD', usernameVariable: 'DOCKER_REGISTRY_USER')]) {
+                            // assumes Jib is configured to use the environment variables
+                            sh "docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PWD}"
+                            app.push()
+                        }
+                    }
+                }
+            }
+        }
         
     }
 }
