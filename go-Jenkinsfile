@@ -24,14 +24,13 @@ pipeline {
                 }
             }
         }
-        
-        stage('Test') {
-            dir('services/go-auth'){
-                agent{
-                docker { image 'golang:1.21-bullseye' }
-
-                }
-                steps {
+    
+        stae('Test') {
+            agent{
+            docker { image 'golang:1.21-bullseye' }
+            }
+            steps {
+                dir('services/go-auth'){
                     sh './go test ./'
                 }
 
@@ -40,9 +39,9 @@ pipeline {
             
         }
         stage('Push image') {
-            dir('services/go-auth'){
+            steps{
 
-                steps{
+                dir('services/go-auth'){
                     script{
                         withCredentials([usernamePassword(credentialsId: 'jordi.docker', passwordVariable: 'DOCKER_REGISTRY_PWD', usernameVariable: 'DOCKER_REGISTRY_USER')]) {
                             // assumes Jib is configured to use the environment variables
