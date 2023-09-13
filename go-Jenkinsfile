@@ -25,7 +25,7 @@ pipeline {
             }
         }
     
-        stae('Test') {
+        stage('Test') {
             agent{
             docker { image 'golang:1.21-bullseye' }
             }
