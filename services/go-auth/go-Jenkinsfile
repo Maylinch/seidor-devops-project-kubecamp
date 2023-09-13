@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    parameters{
+        string(name: 'DOCKER_IMAGE', defaultValue: 'maylinch99/jordi-kubecamp-go', description: 'Docker image name')
+        string(name: 'TAG', defaultValue: 'latest', description: 'version name')
+        string(name: 'CREDENTIALS', defaultValue: 'jordi.dockerhub', description: 'DockerHub credentials')
+    }
+    
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+       stage('Build Docker Image') {
+            steps {
+                script {
+                    def dockerfile = "Dockerfile"
+                    // Construye la imagen de Docker
+                    app = docker.build("${params.DOCKER_IMAGE}:${params.TAG}", "-f .docker/${dockerfile}  .")
+                }
+            }
+        }
+        
+        stage('Test') {
+            agent{
+                docker { image 'golang:1.21-bullseye' }
+
+            }
+            steps {
+                sh './go test ./'
+            }
+        }
+        stage('Push image') {
+            steps{
+                script{
+                    withCredentials([usernamePassword(credentialsId: 'jordi.docker', passwordVariable: 'DOCKER_REGISTRY_PWD', usernameVariable: 'DOCKER_REGISTRY_USER')]) {
+                        // assumes Jib is configured to use the environment variables
+                        sh "docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PWD}"
+                        app.push()
+                    }
+                }
+            }
+        }
+        
+    }
+}
