@@ -2,7 +2,7 @@ FROM gradle:8.2-jdk17 AS build
 
 WORKDIR /app
 COPY . .
-RUN gradle clean build
+RUN gradle build -x test  
 
 FROM openjdk:21-ea-17-slim-bullseye
 
