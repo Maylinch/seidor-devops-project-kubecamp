@@ -26,12 +26,15 @@ pipeline {
         }
     
         stage('Test') {
-            agent{
-            docker { image 'golang:1.21-bullseye' }
-            }
             steps {
                 dir('services/go-auth'){
-                    sh './go test ./'
+                    script{
+                        def dockerfileTest ="Dockerfile.test"
+                        testApp = docker.build("${params.DOCKER_IMAGE}:test", "-f ${dockerfileTest} .")
+
+                        testApp.run()
+
+                    }
                 }
 
 
