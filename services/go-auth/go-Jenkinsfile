@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     // Construye la imagen de Docker
-                    app = docker.build("${params.DOCKER_IMAGE}:${params.TAG}", "-f Dockerfile  .")
+                    app = docker.build("${params.DOCKER_IMAGE}:${params.TAG}", "-f ./Dockerfile  .")
                 }
             }
         }
