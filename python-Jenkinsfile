@@ -5,6 +5,7 @@ pipeline {
         string(name: 'DOCKER_IMAGE', defaultValue: 'maylinch99/jordi-kubecamp-python', description: 'Docker image name')
         string(name: 'TAG', defaultValue: 'latest', description: 'version name')
         string(name: 'CREDENTIALS', defaultValue: 'jordi.dockerhub', description: 'DockerHub credentials')
+        //esto es una prueba
     }
     
 
