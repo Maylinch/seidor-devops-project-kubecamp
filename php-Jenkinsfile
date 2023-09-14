@@ -37,13 +37,18 @@ pipeline {
         }
     
         stage('Test') {
-            agent{
-                docker { image 'composer:latest' }
-
-            }
+            
             steps {
-                sh 'composer install'  // Instala las dependencias de Composer
-                sh 'composer run test'
+                dir('services/php-progress'){
+                    script{
+                        def dockerfileTest ="Dockerfile.test"
+                        testApp = docker.build("${params.DOCKER_IMAGE}:test", "-f ${dockerfileTest} .")
+
+                        testApp.run()
+
+                    }
+                }
+   
             }           
         }
         stage('Push image') {
