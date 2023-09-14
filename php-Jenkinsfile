@@ -20,7 +20,7 @@ pipeline {
                 script {
                     def scannerHome = tool 'sonarqube_5.0'
                     withSonarQubeEnv(installationName: 'aroldev sonarqube') {
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jordi-kubecamp-php -Dsonar.sources=./services/php-progress -Dsonar.exclusions=**/*Test.php -Dsonar.tests=./services/php-progress -Dsonar.test.inclusions=**/*Test.php"
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jordi-kubecamp-php -Dsonar.sources=./services/php-progress -Dsonar.exclusions=**/*Test.php,./Dockerfile.test -Dsonar.tests=./services/php-progress -Dsonar.test.inclusions=**/*Test.php"
                     }
                 }
             }
