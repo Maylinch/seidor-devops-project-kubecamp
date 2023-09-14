@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters{
-        string(name: 'DOCKER_IMAGE', defaultValue: 'maylinch99/jordi-kubecamp-go', description: 'Docker image name')
+        string(name: 'DOCKER_IMAGE', defaultValue: 'maylinch99/jordi-kubecamp-python', description: 'Docker image name')
         string(name: 'TAG', defaultValue: 'latest', description: 'version name')
         string(name: 'CREDENTIALS', defaultValue: 'jordi.dockerhub', description: 'DockerHub credentials')
     }
@@ -20,14 +20,14 @@ pipeline {
                 script {
                     def scannerHome = tool 'sonarqube_5.0'
                     withSonarQubeEnv(installationName: 'aroldev sonarqube') {
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=pau-kubecamp-go -Dsonar.sources=./services/go-auth -Dsonar.exclusions=**/*_test.go -Dsonar.tests=./services/go-auth -Dsonar.test.inclusions=**/*_test.go"
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=jordi-kubecamp-python -Dsonar.sources=./services/python-discuss -Dsonar.inclusions=**/*.py"
                     }
                 }
             }
         } 
        stage('Build Docker Image') {
             steps {
-                dir('services/go-auth'){
+                dir('services/python-discuss'){
                     script {
                     // Construye la imagen de Docker
                         app = docker.build("${params.DOCKER_IMAGE}:${params.TAG}", "-f ./Dockerfile  .")
@@ -36,26 +36,10 @@ pipeline {
             }
         }
     
-        stage('Test') {
-            steps {
-                dir('services/go-auth'){
-                    script{
-                        def dockerfileTest ="Dockerfile.test"
-                        testApp = docker.build("${params.DOCKER_IMAGE}:test", "-f ${dockerfileTest} .")
-
-                        testApp.run()
-
-                    }
-                }
-
-
-            }
-            
-        }
-        stage('Push image') {
+                stage('Push image') {
             steps{
 
-                dir('services/go-auth'){
+                dir('services/python-discuss'){
                     script{
                         withCredentials([usernamePassword(credentialsId: 'jordi.docker', passwordVariable: 'DOCKER_REGISTRY_PWD', usernameVariable: 'DOCKER_REGISTRY_USER')]) {
                             // assumes Jib is configured to use the environment variables
