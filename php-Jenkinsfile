@@ -42,7 +42,8 @@ pipeline {
 
             }
             steps {
-                sh './composer run test'
+                sh 'composer install'  // Instala las dependencias de Composer
+                sh 'composer run test'
             }           
         }
         stage('Push image') {
