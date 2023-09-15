@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kubecamp-mongo-go
+spec:
+  replicas: 1  # El número de réplicas deseado
+  serviceName: mongo-headless  # El nombre del servicio que maneja el acceso a los pods individuales
+  selector:
+    matchLabels:
+      app: go-mongo  # Etiqueta que coincide con los pods
+  template:
+    metadata:
+      labels:
+        app: go-mongo  # Etiqueta para los pods
+    spec:
+      containers:
+        - name: go-mongo
+          image: mongo:latest  # Imagen de MongoDB que deseas usar
+          ports:
+            - containerPort: 8080  # Puerto en el que MongoDB escucha dentro del contenedor
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /data/db  # Ruta dentro del contenedor donde se montará el volumen
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 10Gi  # Tamaño del volumen de almacenamiento
